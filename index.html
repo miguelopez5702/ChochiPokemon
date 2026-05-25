@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Chochi vs Contrato de Trabajo - La batalla definitiva estilo Pokémon">
+    <title>Chochi vs Contrato | La Batalla Definitiva</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f0e17;
+            --bg-accent: #1a1a3e;
+            --hp-green: #4ade80;
+            --hp-yellow: #fbbf24;
+            --hp-red: #ef4444;
+            --dialog-bg: #fef9ef;
+            --dialog-border: #584a32;
+            --dialog-text: #1a1a2e;
+            --btn-poison: #a855f7;
+            --btn-physical: #ef4444;
+            --btn-special: #eab308;
+            --btn-heal: #22c55e;
+            --btn-legal: #6366f1;
+            --btn-work: #f97316;
+            --btn-threat: #dc2626;
+            --btn-money: #14b8a6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            background: var(--bg-dark);
+            color: #fff;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        /* ===== SCREENS ===== */
+        .screen {
+            position: fixed; inset: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .screen.active { display: flex; }
+
+        /* ===== TITLE SCREEN ===== */
+        #title-screen {
+            background: linear-gradient(135deg, #0f0e17 0%, #1a1a3e 40%, #2d1b69 70%, #0f0e17 100%);
+            overflow: hidden;
+        }
+
+        .title-particles {
+            position: absolute; inset: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        .title-content {
+            text-align: center;
+            z-index: 2;
+            padding: 20px;
+        }
+
+        .title-vs {
+            font-size: clamp(14px, 4vw, 28px);
+            color: #fbbf24;
+            text-shadow: 0 0 20px rgba(251,191,36,0.5);
+            margin: 8px 0;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .title-name {
+            font-size: clamp(20px, 6vw, 48px);
+            line-height: 1.4;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.5), 0 0 30px rgba(168,85,247,0.4);
+        }
+
+        .title-name.chochi { color: #f97316; text-shadow: 3px 3px 0 rgba(0,0,0,0.5), 0 0 30px rgba(249,115,22,0.4); }
+        .title-name.contrato { color: #6366f1; text-shadow: 3px 3px 0 rgba(0,0,0,0.5), 0 0 30px rgba(99,102,241,0.4); }
+
+        .title-subtitle {
+            font-size: clamp(8px, 2.5vw, 16px);
+            color: #94a3b8;
+            margin-top: 16px;
+            animation: flicker 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); text-shadow: 0 0 40px rgba(251,191,36,0.8); }
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .start-btn {
+            margin-top: 40px;
+            padding: 16px 32px;
+            font-family: inherit;
+            font-size: clamp(10px, 2.5vw, 16px);
+            background: linear-gradient(135deg, #f97316, #ef4444);
+            color: #fff;
+            border: 4px solid #fbbf24;
+            border-radius: 12px;
+            cursor: pointer;
+            animation: bounce-btn 1.5s ease-in-out infinite;
+            transition: transform 0.1s, box-shadow 0.1s;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(249,115,22,0.4);
+        }
+
+        .start-btn:hover { transform: scale(1.05); box-shadow: 0 6px 25px rgba(249,115,22,0.6); }
+        .start-btn:active { transform: scale(0.95); }
+
+        @keyframes bounce-btn {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        /* ===== BATTLE SCREEN ===== */
+        #battle-screen {
+            flex-direction: column;
+            background: #111;
+        }
+
+        .battle-scene {
+            flex: 1;
+            width: 100%;
+            position: relative;
+            background:
+                linear-gradient(180deg,
+                    #5b9bd5 0%, #87CEEB 30%,
+                    #87CEEB 45%,
+                    #7BC67E 45%, #6aad6a 55%,
+                    #5a9a5a 70%, #4a8a4a 100%
+                );
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* Ground perspective lines */
+        .battle-scene::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 55%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 48%,
+                rgba(255,255,255,0.03) 48%,
+                rgba(255,255,255,0.03) 52%,
+                transparent 52%
+            );
+            pointer-events: none;
+        }
+
+        /* Cloud decorations */
+        .cloud {
+            position: absolute;
+            background: rgba(255,255,255,0.7);
+            border-radius: 50px;
+            animation: drift-cloud linear infinite;
+        }
+        .cloud-1 { width: 80px; height: 25px; top: 8%; left: -100px; animation-duration: 25s; }
+        .cloud-2 { width: 60px; height: 18px; top: 15%; left: -80px; animation-duration: 35s; animation-delay: 10s; }
+        .cloud-3 { width: 100px; height: 30px; top: 5%; left: -120px; animation-duration: 30s; animation-delay: 5s; }
+
+        @keyframes drift-cloud {
+            from { transform: translateX(0); }
+            to { transform: translateX(calc(100vw + 200px)); }
+        }
+
+        /* Fighter areas */
+        .fighter-area {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .enemy-area {
+            top: 5%;
+            right: 5%;
+            width: 45%;
+            max-width: 300px;
+        }
+
+        .player-area {
+            bottom: 5%;
+            left: 5%;
+            width: 45%;
+            max-width: 300px;
+        }
+
+        /* HP Box */
+        .hp-box {
+            width: 100%;
+            background: linear-gradient(135deg, #fef9ef, #f5e6c8);
+            border: 3px solid var(--dialog-border);
+            border-radius: 10px;
+            padding: clamp(6px, 1.5vw, 12px);
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+            z-index: 5;
+        }
+
+        .enemy-area .hp-box { order: 1; }
+        .player-area .hp-box { order: 2; }
+
+        .hp-name {
+            font-size: clamp(7px, 1.8vw, 12px);
+            color: var(--dialog-text);
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hp-name .level {
+            font-size: clamp(6px, 1.4vw, 10px);
+            color: #888;
+        }
+
+        .hp-bar-container {
+            width: 100%;
+            height: clamp(8px, 2vw, 14px);
+            background: #333;
+            border-radius: 7px;
+            overflow: hidden;
+            border: 2px solid #555;
+        }
+
+        .hp-bar {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.8s ease-out, background-color 0.5s;
+            background: var(--hp-green);
+        }
+
+        .hp-text {
+            font-size: clamp(6px, 1.4vw, 9px);
+            color: #666;
+            text-align: right;
+            margin-top: 3px;
+        }
+
+        /* Sprite containers */
+        .sprite-container {
+            z-index: 3;
+            position: relative;
+        }
+
+        .enemy-area .sprite-container { order: 2; margin-top: 8px; }
+        .player-area .sprite-container { order: 1; margin-bottom: 8px; }
+
+        .sprite-container img, .sprite-fallback {
+            width: clamp(80px, 20vw, 160px);
+            height: clamp(80px, 20vw, 160px);
+            object-fit: contain;
+            image-rendering: pixelated;
+            filter: drop-shadow(3px 3px 2px rgba(0,0,0,0.4));
+        }
+
+        .sprite-container img { display: block; }
+
+        .sprite-fallback {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(50px, 14vw, 110px);
+            line-height: 1;
+        }
+
+        /* Idle animations */
+        .player-area .sprite-container {
+            animation: idle-bounce 2s ease-in-out infinite;
+        }
+        .enemy-area .sprite-container {
+            animation: idle-float 3s ease-in-out infinite;
+        }
+
+        @keyframes idle-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        @keyframes idle-float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
+
+        /* Attack animations */
+        .sprite-container.attack-player {
+            animation: attack-right 0.4s ease-in-out;
+        }
+        .sprite-container.attack-enemy {
+            animation: attack-left 0.4s ease-in-out;
+        }
+
+        @keyframes attack-right {
+            0% { transform: translateX(0); }
+            40% { transform: translateX(60px) scale(1.1); }
+            100% { transform: translateX(0) scale(1); }
+        }
+        @keyframes attack-left {
+            0% { transform: translateX(0); }
+            40% { transform: translateX(-60px) scale(1.1); }
+            100% { transform: translateX(0) scale(1); }
+        }
+
+        .sprite-container.hit {
+            animation: hit-flash 0.4s ease-out;
+        }
+        @keyframes hit-flash {
+            0% { filter: brightness(1) drop-shadow(3px 3px 2px rgba(0,0,0,0.4)); }
+            25% { filter: brightness(3) drop-shadow(0 0 15px #fff); opacity: 0.5; }
+            50% { filter: brightness(1) drop-shadow(3px 3px 2px rgba(0,0,0,0.4)); opacity: 1; }
+            75% { filter: brightness(2) drop-shadow(0 0 10px #fff); opacity: 0.6; }
+            100% { filter: brightness(1) drop-shadow(3px 3px 2px rgba(0,0,0,0.4)); opacity: 1; }
+        }
+
+        .sprite-container.faint {
+            animation: faint 1s ease-in forwards;
+        }
+        @keyframes faint {
+            0% { transform: translateY(0); opacity: 1; }
+            50% { transform: translateY(10px) rotate(5deg); opacity: 0.7; }
+            100% { transform: translateY(80px) rotate(15deg); opacity: 0; }
+        }
+
+        /* Screen shake */
+        .battle-scene.shake {
+            animation: screen-shake 0.3s ease-out;
+        }
+        @keyframes screen-shake {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-6px, 3px); }
+            40% { transform: translate(5px, -4px); }
+            60% { transform: translate(-3px, 5px); }
+            80% { transform: translate(4px, -2px); }
+        }
+
+        /* ===== UI AREA ===== */
+        .ui-area {
+            width: 100%;
+            background: linear-gradient(180deg, #1a1a2e, #0f0e17);
+            border-top: 3px solid #333;
+            flex-shrink: 0;
+        }
+
+        /* Dialog Box */
+        .dialog-box {
+            width: 100%;
+            min-height: clamp(60px, 12vh, 90px);
+            background: var(--dialog-bg);
+            border: 4px solid var(--dialog-border);
+            border-radius: 0;
+            padding: clamp(10px, 2.5vw, 18px);
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .dialog-text {
+            font-size: clamp(9px, 2.2vw, 14px);
+            color: var(--dialog-text);
+            line-height: 1.8;
+            min-height: 2.5em;
+        }
+
+        .dialog-arrow {
+            position: absolute;
+            bottom: 8px; right: 12px;
+            font-size: 14px;
+            color: var(--dialog-text);
+            animation: blink-arrow 0.8s steps(2) infinite;
+            display: none;
+        }
+
+        @keyframes blink-arrow {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Action Menu */
+        .action-menu {
+            width: 100%;
+            padding: clamp(6px, 1.5vw, 12px);
+            display: none;
+        }
+
+        .action-menu.visible { display: block; }
+
+        .attack-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(6px, 1.5vw, 10px);
+        }
+
+        .attack-btn {
+            font-family: inherit;
+            font-size: clamp(7px, 1.8vw, 11px);
+            padding: clamp(10px, 2.5vw, 16px) clamp(6px, 1.5vw, 10px);
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.1s, box-shadow 0.1s, filter 0.1s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .attack-btn::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .attack-btn:hover:not(:disabled) { transform: scale(1.03); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .attack-btn:active:not(:disabled) { transform: scale(0.96); }
+        .attack-btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.5); }
+
+        .attack-btn .pp-text {
+            display: block;
+            font-size: clamp(5px, 1.2vw, 8px);
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        .attack-btn[data-type="poison"] { background: linear-gradient(135deg, #9333ea, #7c3aed); }
+        .attack-btn[data-type="physical"] { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+        .attack-btn[data-type="special"] { background: linear-gradient(135deg, #ca8a04, #a16207); }
+        .attack-btn[data-type="heal"] { background: linear-gradient(135deg, #16a34a, #15803d); }
+
+        /* Mute button */
+        .mute-btn {
+            position: fixed;
+            top: 8px; right: 8px;
+            z-index: 100;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            width: 40px; height: 40px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .mute-btn:hover { background: rgba(0,0,0,0.7); }
+
+        /* ===== RESULT SCREEN ===== */
+        #result-screen {
+            background: linear-gradient(135deg, #0f0e17, #1a1a3e);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .result-title {
+            font-size: clamp(16px, 5vw, 36px);
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+        }
+
+        .result-title.victory { color: #fbbf24; }
+        .result-title.defeat { color: #ef4444; }
+
+        .result-message {
+            font-size: clamp(8px, 2.2vw, 14px);
+            color: #94a3b8;
+            line-height: 2;
+            margin-bottom: 30px;
+            max-width: 500px;
+        }
+
+        .restart-btn {
+            padding: 14px 28px;
+            font-family: inherit;
+            font-size: clamp(9px, 2.2vw, 14px);
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            border: 3px solid #a78bfa;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+        }
+        .restart-btn:hover { transform: scale(1.05); box-shadow: 0 6px 25px rgba(99,102,241,0.6); }
+        .restart-btn:active { transform: scale(0.95); }
+
+        /* ===== DAMAGE POPUP ===== */
+        .damage-popup {
+            position: absolute;
+            font-family: inherit;
+            font-size: clamp(14px, 3.5vw, 22px);
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000;
+            pointer-events: none;
+            z-index: 20;
+            animation: popup-rise 1s ease-out forwards;
+        }
+        .damage-popup.critical { color: #fbbf24; font-size: clamp(18px, 4.5vw, 28px); }
+        .damage-popup.heal { color: #4ade80; }
+
+        @keyframes popup-rise {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
+            100% { transform: translateY(-50px) scale(1); opacity: 0; }
+        }
+
+        /* ===== EFFECT OVERLAY ===== */
+        .effect-overlay {
+            position: absolute; inset: 0;
+            pointer-events: none;
+            z-index: 15;
+            display: none;
+        }
+        .effect-overlay.active { display: block; }
+
+        /* Status effect particles */
+        .status-particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particle-up 1s ease-out forwards;
+        }
+        @keyframes particle-up {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-60px) scale(0); opacity: 0; }
+        }
+
+        /* ===== INTRO OVERLAY ===== */
+        .intro-overlay {
+            position: fixed; inset: 0;
+            background: #000;
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .intro-overlay.active { display: flex; }
+        .intro-text {
+            font-size: clamp(10px, 3vw, 18px);
+            text-align: center;
+            line-height: 2;
+            padding: 20px;
+            animation: fade-in-text 0.5s ease-out;
+        }
+        @keyframes fade-in-text {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 768px) {
+            .battle-scene { max-height: 60vh; }
+            .dialog-box { max-width: 700px; margin: 0 auto; }
+            .action-menu { max-width: 700px; margin: 0 auto; }
+        }
+
+        @media (orientation: landscape) and (max-height: 500px) {
+            .battle-scene { min-height: 40vh; }
+            .dialog-box { min-height: 50px; padding: 8px 12px; }
+            .sprite-container img, .sprite-fallback {
+                width: clamp(50px, 12vw, 100px);
+                height: clamp(50px, 12vw, 100px);
+            }
+        }
+
+        /* ===== TRANSITION ===== */
+        .screen-transition {
+            position: fixed; inset: 0;
+            background: #000;
+            z-index: 200;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .screen-transition.active { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <!-- SCREEN TRANSITION -->
+    <div class="screen-transition" id="screen-transition"></div>
+
+    <!-- MUTE BUTTON -->
+    <button class="mute-btn" id="mute-btn" title="Silenciar/Activar música">🔊</button>
+
+    <!-- ===== TITLE SCREEN ===== -->
+    <div class="screen active" id="title-screen">
+        <div class="title-particles" id="particles"></div>
+        <div class="title-content">
+            <div class="title-name chochi">CHOCHI</div>
+            <div class="title-vs">⚔️ VS ⚔️</div>
+            <div class="title-name contrato">CONTRATO</div>
+            <div class="title-subtitle">~ La Batalla Definitiva ~</div>
+            <button class="start-btn" id="start-btn">⚡ EMPEZAR COMBATE ⚡</button>
+        </div>
+    </div>
+
+    <!-- ===== INTRO OVERLAY ===== -->
+    <div class="intro-overlay" id="intro-overlay">
+        <div class="intro-text" id="intro-text"></div>
+    </div>
+
+    <!-- ===== BATTLE SCREEN ===== -->
+    <div class="screen" id="battle-screen">
+        <div class="battle-scene" id="battle-scene">
+            <!-- Clouds -->
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+            <div class="cloud cloud-3"></div>
+
+            <!-- Effect overlay -->
+            <div class="effect-overlay" id="effect-overlay"></div>
+
+            <!-- Enemy area (Contrato) -->
+            <div class="fighter-area enemy-area" id="enemy-area">
+                <div class="hp-box">
+                    <div class="hp-name">
+                        <span>CONTRATO</span>
+                        <span class="level">Nv.50</span>
+                    </div>
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" id="enemy-hp-bar"></div>
+                    </div>
+                    <div class="hp-text" id="enemy-hp-text">380 / 380</div>
+                </div>
+                <div class="sprite-container" id="enemy-sprite">
+                    <img src="contrato.png" alt="Contrato de Trabajo"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="sprite-fallback">📋</div>
+                </div>
+            </div>
+
+            <!-- Player area (Chochi) -->
+            <div class="fighter-area player-area" id="player-area">
+                <div class="sprite-container" id="player-sprite">
+                    <img src="chochi.png" alt="Chochi"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="sprite-fallback">🧔</div>
+                </div>
+                <div class="hp-box">
+                    <div class="hp-name">
+                        <span>CHOCHI</span>
+                        <span class="level">Nv.50</span>
+                    </div>
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" id="player-hp-bar"></div>
+                    </div>
+                    <div class="hp-text" id="player-hp-text">420 / 420</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- UI Area -->
+        <div class="ui-area">
+            <div class="dialog-box" id="dialog-box">
+                <span class="dialog-text" id="dialog-text"></span>
+                <span class="dialog-arrow" id="dialog-arrow">▼</span>
+            </div>
+            <div class="action-menu" id="action-menu">
+                <div class="attack-grid" id="attack-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== RESULT SCREEN ===== -->
+    <div class="screen" id="result-screen">
+        <div class="result-title" id="result-title"></div>
+        <div class="result-message" id="result-message"></div>
+        <button class="restart-btn" id="restart-btn">🔄 REVANCHA 🔄</button>
+    </div>
+
+    <script>
+    /* ============================================================
+       GAME CONFIGURATION
+       ============================================================ */
+    const CONFIG = {
+        PLAYER: {
+            name: 'CHOCHI',
+            maxHp: 420,
+            atk: 78,
+            def: 55,
+            speed: 85,
+            moves: [
+                {
+                    name: 'Olor a Chorizo',
+                    power: 55,
+                    accuracy: 100,
+                    maxPp: 15,
+                    type: 'poison',
+                    messages: [
+                        '¡CHOCHI libera un aroma a chorizo ibérico que tumba!',
+                        '¡Un tufo a chorizo casero invade el campo de batalla!',
+                        '¡El olor a chorizo es tan potente que se podría untar en pan!'
+                    ]
+                },
+                {
+                    name: 'Uñas Afiladas',
+                    power: 75,
+                    accuracy: 95,
+                    maxPp: 10,
+                    type: 'physical',
+                    messages: [
+                        '¡CHOCHI ataca con uñas que no se corta desde 2019!',
+                        '¡Las garras de CHOCHI desgarran el papel como mantequilla!',
+                        '¡CHOCHI araña como un gato callejero cabreado!'
+                    ]
+                },
+                {
+                    name: 'Pito Descapotao',
+                    power: 95,
+                    accuracy: 80,
+                    maxPp: 5,
+                    type: 'special',
+                    messages: [
+                        '¡CHOCHI se baja los pantalones sin previo aviso! ¡¡DAÑO PSICOLÓGICO!!',
+                        '¡Nadie estaba preparado para esto! ¡El contrato se arruga del horror!',
+                        '¡CHOCHI usa su ataque definitivo! ¡Los abogados lloran!'
+                    ]
+                },
+                {
+                    name: 'Wake Up',
+                    power: 0,
+                    accuracy: 100,
+                    maxPp: 5,
+                    type: 'heal',
+                    healPercent: 35,
+                    messages: [
+                        '¡CHOCHI se echa un Red Bull y recupera fuerzas!',
+                        '¡CHOCHI se pega una siestecita express y vuelve como nuevo!',
+                        '¡CHOCHI se motiva con reggaeton a todo trapo y recupera HP!'
+                    ]
+                }
+            ]
+        },
+        ENEMY: {
+            name: 'CONTRATO',
+            maxHp: 380,
+            atk: 72,
+            def: 75,
+            speed: 40,
+            moves: [
+                {
+                    name: 'Cláusula Abusiva',
+                    power: 70,
+                    accuracy: 90,
+                    maxPp: 10,
+                    type: 'legal',
+                    messages: [
+                        '¡CONTRATO despliega 47 páginas de letra microscópica!',
+                        '¡Una cláusula escondida en la página 382 golpea a CHOCHI!',
+                        '¡CONTRATO usa jerga legal incomprensible! ¡Es muy confuso!'
+                    ]
+                },
+                {
+                    name: 'Horas Extra',
+                    power: 55,
+                    accuracy: 100,
+                    maxPp: 15,
+                    type: 'work',
+                    messages: [
+                        '¡CONTRATO obliga a trabajar el sábado gratis!',
+                        '¡Horas extra sin remunerar! ¡El alma de CHOCHI se debilita!',
+                        '¡CONTRATO exige productividad a las 3 de la mañana!'
+                    ]
+                },
+                {
+                    name: 'Período de Prueba',
+                    power: 90,
+                    accuracy: 80,
+                    maxPp: 5,
+                    type: 'threat',
+                    messages: [
+                        '¡CONTRATO amenaza: "Aquí nadie es imprescindible"!',
+                        '¡6 meses de prueba sin derechos! ¡Es devastador!',
+                        '¡CONTRATO evalúa tu rendimiento negativamente!'
+                    ]
+                },
+                {
+                    name: 'Nómina Retrasada',
+                    power: 65,
+                    accuracy: 95,
+                    maxPp: 10,
+                    type: 'money',
+                    messages: [
+                        '¡La nómina no llega! ¡Tu cuenta bancaria llora!',
+                        '¡Ya van 3 meses sin cobrar! ¡Daño emocional severo!',
+                        '¡CONTRATO promete pagar "el mes que viene"... otra vez!'
+                    ]
+                }
+            ]
+        },
+        TYPEWRITER_SPEED: 30,
+        TURN_DELAY: 600
+    };
+
+    /* ============================================================
+       AUDIO MANAGER - Procedural Chiptune Music & SFX
+       ============================================================ */
+    class AudioManager {
+        constructor() {
+            this.ctx = null;
+            this.initialized = false;
+            this.muted = false;
+            this.musicPlaying = false;
+            this.musicNodes = [];
+            this.masterGain = null;
+            this.musicGain = null;
+            this.sfxGain = null;
+            this.nextLoopTime = 0;
+            this.loopTimerId = null;
+        }
+
+        init() {
+            if (this.initialized) return;
+            try {
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.gain.value = 1.0;
+                this.masterGain.connect(this.ctx.destination);
+
+                this.musicGain = this.ctx.createGain();
+                this.musicGain.gain.value = 0.35;
+                this.musicGain.connect(this.masterGain);
+
+                this.sfxGain = this.ctx.createGain();
+                this.sfxGain.gain.value = 0.5;
+                this.sfxGain.connect(this.masterGain);
+
+                this.initialized = true;
+            } catch (e) {
+                console.warn('Web Audio API not supported:', e);
+            }
+        }
+
+        toggleMute() {
+            this.muted = !this.muted;
+            if (this.masterGain) {
+                this.masterGain.gain.value = this.muted ? 0 : 1;
+            }
+            return this.muted;
+        }
+
+        /* --- NOTE HELPER --- */
+        noteFreq(name) {
+            const notes = {
+                'C3':130.81,'D3':146.83,'E3':164.81,'F3':174.61,'G3':196.00,'A3':220.00,'B3':246.94,
+                'C4':261.63,'D4':293.66,'E4':329.63,'F4':349.23,'G4':392.00,'A4':440.00,'Bb4':466.16,'B4':493.88,
+                'C5':523.25,'D5':587.33,'E5':659.25,'F5':698.46,'G5':783.99,'A5':880.00,'B5':987.77,
+                'C6':1046.50,
+                'C2':65.41,'D2':73.42,'E2':82.41,'F2':87.31,'G2':98.00,'A2':110.00,'B2':123.47
+            };
+            return notes[name] || 440;
+        }
+
+        /* --- PLAY TONE --- */
+        playTone(freq, duration, type, gain, startTime) {
+            if (!this.initialized) return;
+            const t = startTime || this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, t);
+            g.gain.setValueAtTime(gain, t);
+            g.gain.setValueAtTime(gain, t + duration * 0.7);
+            g.gain.exponentialRampToValueAtTime(0.001, t + duration);
+            osc.connect(g);
+            g.connect(this.musicGain);
+            osc.start(t);
+            osc.stop(t + duration + 0.05);
+        }
+
+        /* --- NOISE BURST (for drums) --- */
+        playNoise(duration, startTime, volume = 0.1) {
+            if (!this.initialized) return;
+            const t = startTime || this.ctx.currentTime;
+            const bufferSize = this.ctx.sampleRate * duration;
+            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1);
+            }
+            const noise = this.ctx.createBufferSource();
+            noise.buffer = buffer;
+            const g = this.ctx.createGain();
+            g.gain.setValueAtTime(volume, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + duration);
+            const hp = this.ctx.createBiquadFilter();
+            hp.type = 'highpass';
+            hp.frequency.value = 7000;
+            noise.connect(hp);
+            hp.connect(g);
+            g.connect(this.musicGain);
+            noise.start(t);
+            noise.stop(t + duration + 0.01);
+        }
+
+        /* --- KICK DRUM --- */
+        playKick(startTime) {
+            if (!this.initialized) return;
+            const t = startTime;
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(150, t);
+            osc.frequency.exponentialRampToValueAtTime(30, t + 0.15);
+            g.gain.setValueAtTime(0.4, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+            osc.connect(g);
+            g.connect(this.musicGain);
+            osc.start(t);
+            osc.stop(t + 0.2);
+        }
+
+        /* --- BATTLE MUSIC LOOP --- */
+        startBattleMusic() {
+            if (!this.initialized || this.musicPlaying) return;
+            this.musicPlaying = true;
+            this.scheduleLoop(this.ctx.currentTime + 0.1);
+        }
+
+        scheduleLoop(startTime) {
+            if (!this.musicPlaying) return;
+
+            const bpm = 150;
+            const beat = 60 / bpm;
+            const eighth = beat / 2;
+            const barLen = beat * 4;
+            const loopBars = 4;
+            const loopDuration = barLen * loopBars;
+
+            // Melody (32 eighth notes)
+            const melodySeq = [
+                'E5','E5','G5','A5', 'A5','G5','E5','C5',
+                'D5','D5','F5','A5', 'G5',null,'E5',null,
+                'E5','G5','A5','C6', 'B5','A5','G5','E5',
+                'D5','F5','E5','C5', 'D5',null,'C5',null
+            ];
+
+            // Bass (whole notes per bar)
+            const bassSeq = ['C3','F3','G3','C3'];
+
+            // Harmony (quarter notes, softer)
+            const harmonySeq = [
+                'C4','E4','G4','E4',
+                'F4','A4','C5','A4',
+                'G4','B4','D5','B4',
+                'C4','E4','G4','E4'
+            ];
+
+            let t = startTime;
+
+            // Schedule melody
+            melodySeq.forEach((note, i) => {
+                if (note) {
+                    this.playTone(this.noteFreq(note), eighth * 0.85, 'square', 0.12, t + i * eighth);
+                }
+            });
+
+            // Schedule bass
+            bassSeq.forEach((note, i) => {
+                this.playTone(this.noteFreq(note), barLen * 0.9, 'triangle', 0.2, t + i * barLen);
+            });
+
+            // Schedule harmony
+            harmonySeq.forEach((note, i) => {
+                if (note) {
+                    this.playTone(this.noteFreq(note), beat * 0.7, 'square', 0.04, t + i * beat);
+                }
+            });
+
+            // Schedule drums
+            for (let bar = 0; bar < loopBars; bar++) {
+                for (let b = 0; b < 4; b++) {
+                    const drumT = t + bar * barLen + b * beat;
+                    if (b === 0 || b === 2) this.playKick(drumT);
+                    if (b === 1 || b === 3) this.playNoise(0.08, drumT, 0.08);
+                    this.playNoise(0.03, drumT, 0.03);
+                    this.playNoise(0.03, drumT + eighth, 0.02);
+                }
+            }
+
+            // Schedule next loop ahead of time
+            this.nextLoopTime = startTime + loopDuration;
+            const msUntilNext = (loopDuration - 0.3) * 1000;
+            this.loopTimerId = setTimeout(() => {
+                if (this.musicPlaying) {
+                    this.scheduleLoop(this.nextLoopTime);
+                }
+            }, Math.max(msUntilNext, 100));
+        }
+
+        stopBattleMusic() {
+            this.musicPlaying = false;
+            if (this.loopTimerId) {
+                clearTimeout(this.loopTimerId);
+                this.loopTimerId = null;
+            }
+        }
+
+        /* --- SFX --- */
+        playSfxHit() {
+            if (!this.initialized) return;
+            const t = this.ctx.currentTime;
+            // Impact noise
+            const bufSize = this.ctx.sampleRate * 0.15;
+            const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+            const d = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) d[i] = (Math.random() * 2 - 1);
+            const src = this.ctx.createBufferSource();
+            src.buffer = buf;
+            const g = this.ctx.createGain();
+            g.gain.setValueAtTime(0.3, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+            const lp = this.ctx.createBiquadFilter();
+            lp.type = 'lowpass';
+            lp.frequency.value = 2000;
+            src.connect(lp);
+            lp.connect(g);
+            g.connect(this.sfxGain);
+            src.start(t);
+            src.stop(t + 0.2);
+            // Low thud
+            const osc = this.ctx.createOscillator();
+            const g2 = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(200, t);
+            osc.frequency.exponentialRampToValueAtTime(50, t + 0.1);
+            g2.gain.setValueAtTime(0.25, t);
+            g2.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+            osc.connect(g2);
+            g2.connect(this.sfxGain);
+            osc.start(t);
+            osc.stop(t + 0.15);
+        }
+
+        playSfxCritical() {
+            if (!this.initialized) return;
+            this.playSfxHit();
+            const t = this.ctx.currentTime + 0.05;
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(400, t);
+            osc.frequency.exponentialRampToValueAtTime(100, t + 0.2);
+            g.gain.setValueAtTime(0.15, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+            osc.connect(g);
+            g.connect(this.sfxGain);
+            osc.start(t);
+            osc.stop(t + 0.3);
+        }
+
+        playSfxHeal() {
+            if (!this.initialized) return;
+            const t = this.ctx.currentTime;
+            [523, 659, 784, 1047].forEach((freq, i) => {
+                const osc = this.ctx.createOscillator();
+                const g = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                g.gain.setValueAtTime(0.15, t + i * 0.1);
+                g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.1 + 0.2);
+                osc.connect(g);
+                g.connect(this.sfxGain);
+                osc.start(t + i * 0.1);
+                osc.stop(t + i * 0.1 + 0.25);
+            });
+        }
+
+        playSfxMiss() {
+            if (!this.initialized) return;
+            const t = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, t);
+            osc.frequency.exponentialRampToValueAtTime(200, t + 0.3);
+            g.gain.setValueAtTime(0.1, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+            osc.connect(g);
+            g.connect(this.sfxGain);
+            osc.start(t);
+            osc.stop(t + 0.35);
+        }
+
+        playSfxSelect() {
+            if (!this.initialized) return;
+            const t = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = 'square';
+            osc.frequency.value = 800;
+            g.gain.setValueAtTime(0.08, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+            osc.connect(g);
+            g.connect(this.sfxGain);
+            osc.start(t);
+            osc.stop(t + 0.08);
+        }
+
+        playSfxVictory() {
+            if (!this.initialized) return;
+            const t = this.ctx.currentTime;
+            const fanfare = [523, 659, 784, 1047, 784, 1047];
+            fanfare.forEach((freq, i) => {
+                const dur = i === fanfare.length - 1 ? 0.6 : 0.15;
+                const osc = this.ctx.createOscillator();
+                const g = this.ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.value = freq;
+                g.gain.setValueAtTime(0.15, t + i * 0.18);
+                g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.18 + dur);
+                osc.connect(g);
+                g.connect(this.sfxGain);
+                osc.start(t + i * 0.18);
+                osc.stop(t + i * 0.18 + dur + 0.05);
+            });
+        }
+
+        playSfxDefeat() {
+            if (!this.initialized) return;
+            const t = this.ctx.currentTime;
+            const sad = [392, 349, 330, 262];
+            sad.forEach((freq, i) => {
+                const dur = i === sad.length - 1 ? 0.8 : 0.3;
+                const osc = this.ctx.createOscillator();
+                const g = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = freq;
+                g.gain.setValueAtTime(0.15, t + i * 0.35);
+                g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.35 + dur);
+                osc.connect(g);
+                g.connect(this.sfxGain);
+                osc.start(t + i * 0.35);
+                osc.stop(t + i * 0.35 + dur + 0.05);
+            });
+        }
+    }
+
+    /* ============================================================
+       GAME STATE
+       ============================================================ */
+    const audio = new AudioManager();
+    let gameState = null;
+
+    function createGameState() {
+        return {
+            player: {
+                hp: CONFIG.PLAYER.maxHp,
+                maxHp: CONFIG.PLAYER.maxHp,
+                atk: CONFIG.PLAYER.atk,
+                def: CONFIG.PLAYER.def,
+                pp: CONFIG.PLAYER.moves.map(m => m.maxPp)
+            },
+            enemy: {
+                hp: CONFIG.ENEMY.maxHp,
+                maxHp: CONFIG.ENEMY.maxHp,
+                atk: CONFIG.ENEMY.atk,
+                def: CONFIG.ENEMY.def,
+                pp: CONFIG.ENEMY.moves.map(m => m.maxPp)
+            },
+            turnInProgress: false,
+            battleOver: false
+        };
+    }
+
+    /* ============================================================
+       UI HELPERS
+       ============================================================ */
+    const $ = id => document.getElementById(id);
+
+    function showScreen(id) {
+        const transition = $('screen-transition');
+        transition.classList.add('active');
+        setTimeout(() => {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            $(id).classList.add('active');
+            setTimeout(() => transition.classList.remove('active'), 50);
+        }, 400);
+    }
+
+    function updateHpBar(who) {
+        const state = who === 'player' ? gameState.player : gameState.enemy;
+        const bar = $(who === 'player' ? 'player-hp-bar' : 'enemy-hp-bar');
+        const text = $(who === 'player' ? 'player-hp-text' : 'enemy-hp-text');
+        const pct = Math.max(0, state.hp / state.maxHp * 100);
+
+        bar.style.width = pct + '%';
+        if (pct > 50) bar.style.backgroundColor = 'var(--hp-green)';
+        else if (pct > 20) bar.style.backgroundColor = 'var(--hp-yellow)';
+        else bar.style.backgroundColor = 'var(--hp-red)';
+
+        text.textContent = Math.max(0, Math.ceil(state.hp)) + ' / ' + state.maxHp;
+    }
+
+    /* Typewriter effect - returns a promise */
+    function typeText(text) {
+        return new Promise(resolve => {
+            const el = $('dialog-text');
+            const arrow = $('dialog-arrow');
+            el.textContent = '';
+            arrow.style.display = 'none';
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < text.length) {
+                    el.textContent += text[i];
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    arrow.style.display = 'block';
+                    resolve();
+                }
+            }, CONFIG.TYPEWRITER_SPEED);
+        });
+    }
+
+    /* Wait for click/tap */
+    function waitForTap() {
+        return new Promise(resolve => {
+            function handler() {
+                $('dialog-box').removeEventListener('click', handler);
+                $('dialog-arrow').style.display = 'none';
+                audio.playSfxSelect();
+                resolve();
+            }
+            $('dialog-box').addEventListener('click', handler);
+        });
+    }
+
+    /* Show message and wait */
+    async function showMessage(text) {
+        await typeText(text);
+        await waitForTap();
+    }
+
+    /* Show message without waiting for tap */
+    async function showMessageNoWait(text) {
+        await typeText(text);
+        await delay(800);
+    }
+
+    function delay(ms) {
+        return new Promise(r => setTimeout(r, ms));
+    }
+
+    /* Damage popup */
+    function showDamagePopup(target, amount, isCritical = false, isHeal = false) {
+        const area = $(target === 'player' ? 'player-area' : 'enemy-area');
+        const popup = document.createElement('div');
+        popup.className = 'damage-popup' + (isCritical ? ' critical' : '') + (isHeal ? ' heal' : '');
+        popup.textContent = (isHeal ? '+' : '-') + amount;
+        popup.style.left = '50%';
+        popup.style.top = '30%';
+        popup.style.transform = 'translateX(-50%)';
+        area.appendChild(popup);
+        setTimeout(() => popup.remove(), 1000);
+    }
+
+    /* Show attack menu and wait for selection */
+    function showAttackMenu() {
+        return new Promise(resolve => {
+            const menu = $('action-menu');
+            const grid = $('attack-grid');
+            grid.innerHTML = '';
+
+            CONFIG.PLAYER.moves.forEach((move, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'attack-btn';
+                btn.setAttribute('data-type', move.type);
+                btn.disabled = gameState.player.pp[i] <= 0;
+
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = move.name;
+                btn.appendChild(nameSpan);
+
+                const ppSpan = document.createElement('span');
+                ppSpan.className = 'pp-text';
+                ppSpan.textContent = `PP ${gameState.player.pp[i]}/${move.maxPp}`;
+                btn.appendChild(ppSpan);
+
+                btn.addEventListener('click', () => {
+                    if (gameState.player.pp[i] <= 0) return;
+                    audio.playSfxSelect();
+                    menu.classList.remove('visible');
+                    resolve(i);
+                });
+
+                grid.appendChild(btn);
+            });
+
+            menu.classList.add('visible');
+        });
+    }
+
+    /* ============================================================
+       BATTLE LOGIC
+       ============================================================ */
+    function calculateDamage(attackerAtk, defenderDef, movePower) {
+        const base = movePower * (attackerAtk / defenderDef);
+        const random = 0.85 + Math.random() * 0.15;
+        const critical = Math.random() < 0.08;
+        let dmg = Math.floor(base * random * (critical ? 1.5 : 1));
+        return { damage: Math.max(1, dmg), critical };
+    }
+
+    function checkAccuracy(accuracy) {
+        return Math.random() * 100 < accuracy;
+    }
+
+    function getRandomMessage(messages) {
+        return messages[Math.floor(Math.random() * messages.length)];
+    }
+
+    /* --- Execute player attack --- */
+    async function executePlayerAttack(moveIndex) {
+        const move = CONFIG.PLAYER.moves[moveIndex];
+        gameState.player.pp[moveIndex]--;
+
+        // Show attack name
+        await typeText(`¡CHOCHI usa ${move.name}!`);
+        await delay(400);
+
+        // Attack animation
+        const playerSprite = $('player-sprite');
+        playerSprite.classList.add('attack-player');
+        await delay(200);
+
+        if (move.type === 'heal') {
+            // Heal move
+            const healAmount = Math.floor(gameState.player.maxHp * move.healPercent / 100);
+            const actualHeal = Math.min(healAmount, gameState.player.maxHp - gameState.player.hp);
+            gameState.player.hp = Math.min(gameState.player.maxHp, gameState.player.hp + healAmount);
+            audio.playSfxHeal();
+            updateHpBar('player');
+            showDamagePopup('player', actualHeal, false, true);
+            await delay(300);
+            playerSprite.classList.remove('attack-player');
+            await showMessage(getRandomMessage(move.messages));
+            return;
+        }
+
+        if (!checkAccuracy(move.accuracy)) {
+            // Miss!
+            audio.playSfxMiss();
+            playerSprite.classList.remove('attack-player');
+            await showMessage('¡El ataque de CHOCHI ha fallado! ¡Qué vergüenza!');
+            return;
+        }
+
+        // Hit!
+        const result = calculateDamage(gameState.player.atk, CONFIG.ENEMY.def, move.power);
+        await delay(200);
+
+        const enemySprite = $('enemy-sprite');
+        enemySprite.classList.add('hit');
+        $('battle-scene').classList.add('shake');
+
+        if (result.critical) {
+            audio.playSfxCritical();
+        } else {
+            audio.playSfxHit();
+        }
+
+        gameState.enemy.hp = Math.max(0, gameState.enemy.hp - result.damage);
+        updateHpBar('enemy');
+        showDamagePopup('enemy', result.damage, result.critical);
+
+        await delay(500);
+        enemySprite.classList.remove('hit');
+        $('battle-scene').classList.remove('shake');
+        playerSprite.classList.remove('attack-player');
+
+        // Show attack message
+        await typeText(getRandomMessage(move.messages));
+        await waitForTap();
+
+        if (result.critical) {
+            await showMessage('¡¡GOLPE CRÍTICO!! ¡El contrato tiembla!');
+        }
+    }
+
+    /* --- Execute enemy attack --- */
+    async function executeEnemyAttack() {
+        // AI: pick a random attack (weighted toward stronger ones at low HP)
+        let availableMoves = CONFIG.ENEMY.moves.map((m, i) => ({ move: m, index: i }))
+            .filter((_, i) => gameState.enemy.pp[i] > 0);
+
+        if (availableMoves.length === 0) {
+            await showMessage('¡CONTRATO no tiene PP! ¡Usa Forcejeo!');
+            // Struggle equivalent
+            const dmg = Math.floor(gameState.player.maxHp * 0.1);
+            gameState.player.hp = Math.max(0, gameState.player.hp - dmg);
+            gameState.enemy.hp = Math.max(0, gameState.enemy.hp - Math.floor(dmg * 0.5));
+            updateHpBar('player');
+            updateHpBar('enemy');
+            return;
+        }
+
+        // Weight selection
+        let weights;
+        const hpPct = gameState.enemy.hp / gameState.enemy.maxHp;
+        if (hpPct < 0.3) {
+            weights = availableMoves.map(m => m.move.power || 30);
+        } else {
+            weights = availableMoves.map(() => 1);
+        }
+        const totalWeight = weights.reduce((a, b) => a + b, 0);
+        let rand = Math.random() * totalWeight;
+        let selected = availableMoves[0];
+        for (let i = 0; i < availableMoves.length; i++) {
+            rand -= weights[i];
+            if (rand <= 0) { selected = availableMoves[i]; break; }
+        }
+
+        const move = selected.move;
+        const moveIdx = selected.index;
+        gameState.enemy.pp[moveIdx]--;
+
+        await typeText(`¡CONTRATO usa ${move.name}!`);
+        await delay(400);
+
+        const enemySprite = $('enemy-sprite');
+        enemySprite.classList.add('attack-enemy');
+        await delay(200);
+
+        if (!checkAccuracy(move.accuracy)) {
+            audio.playSfxMiss();
+            enemySprite.classList.remove('attack-enemy');
+            await showMessage('¡El ataque de CONTRATO ha fallado! ¡Burocracia ineficiente!');
+            return;
+        }
+
+        const result = calculateDamage(gameState.enemy.atk, CONFIG.PLAYER.def, move.power);
+        await delay(200);
+
+        const playerSprite = $('player-sprite');
+        playerSprite.classList.add('hit');
+        $('battle-scene').classList.add('shake');
+
+        if (result.critical) {
+            audio.playSfxCritical();
+        } else {
+            audio.playSfxHit();
+        }
+
+        gameState.player.hp = Math.max(0, gameState.player.hp - result.damage);
+        updateHpBar('player');
+        showDamagePopup('player', result.damage, result.critical);
+
+        // Vibrate on mobile
+        if (navigator.vibrate) navigator.vibrate(100);
+
+        await delay(500);
+        playerSprite.classList.remove('hit');
+        $('battle-scene').classList.remove('shake');
+        enemySprite.classList.remove('attack-enemy');
+
+        await typeText(getRandomMessage(move.messages));
+        await waitForTap();
+
+        if (result.critical) {
+            await showMessage('¡¡GOLPE CRÍTICO!! ¡CHOCHI replantea sus decisiones vitales!');
+        }
+    }
+
+    /* ============================================================
+       GAME FLOW
+       ============================================================ */
+    async function startBattle() {
+        gameState = createGameState();
+        updateHpBar('player');
+        updateHpBar('enemy');
+
+        // Reset sprites
+        $('player-sprite').className = 'sprite-container';
+        $('enemy-sprite').className = 'sprite-container';
+        $('player-sprite').style.removeProperty('animation');
+        $('enemy-sprite').style.removeProperty('animation');
+
+        // Show battle screen
+        showScreen('battle-screen');
+        await delay(600);
+
+        // Start music
+        audio.startBattleMusic();
+
+        // Intro sequence
+        await showMessage('¡Un CONTRATO DE TRABAJO salvaje ha aparecido!');
+        await showMessage('¡Es de esos con 6 meses de prueba y salario "competitivo"!');
+        await showMessage('¡Adelante, CHOCHI! ¡Es hora de luchar por tu libertad!');
+        await showMessage('CHOCHI: "¿Pero qué coño es esto...? ¡Vamos allá!"');
+
+        // Battle loop
+        await battleLoop();
+    }
+
+    async function battleLoop() {
+        while (!gameState.battleOver) {
+            // Player turn
+            await typeText('¿Qué debería hacer CHOCHI?');
+            const moveIndex = await showAttackMenu();
+
+            gameState.turnInProgress = true;
+            await executePlayerAttack(moveIndex);
+
+            // Check if enemy fainted
+            if (gameState.enemy.hp <= 0) {
+                gameState.battleOver = true;
+                await handleVictory();
+                return;
+            }
+
+            // Enemy turn
+            await delay(CONFIG.TURN_DELAY);
+            await executeEnemyAttack();
+
+            // Check if player fainted
+            if (gameState.player.hp <= 0) {
+                gameState.battleOver = true;
+                await handleDefeat();
+                return;
+            }
+
+            gameState.turnInProgress = false;
+        }
+    }
+
+    async function handleVictory() {
+        audio.stopBattleMusic();
+        await delay(300);
+
+        // Enemy faints
+        const enemySprite = $('enemy-sprite');
+        enemySprite.classList.remove('hit');
+        enemySprite.classList.add('faint');
+        enemySprite.style.animation = 'none';
+
+        await delay(500);
+        audio.playSfxVictory();
+        await showMessage('¡CONTRATO se ha debilitado!');
+        await showMessage('¡CHOCHI ha ganado la batalla! +420 EXP');
+
+        // Victory messages
+        const victoryMessages = [
+            '¡El paro sigue siendo una opción viable!',
+            '¡La libertad no tiene precio! (la nómina sí)',
+            '¡CHOCHI se ha liberado de las garras del capitalismo!',
+            '¡Victoria! Ahora a seguir en el sofá tranquilamente.'
+        ];
+
+        const resultTitle = $('result-title');
+        resultTitle.textContent = '🏆 ¡VICTORIA! 🏆';
+        resultTitle.className = 'result-title victory';
+
+        const resultMsg = $('result-message');
+        resultMsg.textContent = victoryMessages[Math.floor(Math.random() * victoryMessages.length)];
+
+        showScreen('result-screen');
+    }
+
+    async function handleDefeat() {
+        audio.stopBattleMusic();
+        await delay(300);
+
+        // Player faints
+        const playerSprite = $('player-sprite');
+        playerSprite.classList.remove('hit');
+        playerSprite.classList.add('faint');
+        playerSprite.style.animation = 'none';
+
+        await delay(500);
+        audio.playSfxDefeat();
+        await showMessage('¡CHOCHI se ha debilitado!');
+        await showMessage('CHOCHI ha perdido contra CONTRATO...');
+
+        const defeatMessages = [
+            'Bienvenido a la vida adulta. Lunes a las 8:00.',
+            'El contrato gana. Firma aquí, aquí y aquí.',
+            'CHOCHI ahora tiene que madrugar. RIP.',
+            'El Excel será tu nuevo mejor amigo. Lo sentimos.',
+            'CHOCHI ha sido absorbido por el sistema. Se levanta a las 6:30.'
+        ];
+
+        const resultTitle = $('result-title');
+        resultTitle.textContent = '💀 DERROTA 💀';
+        resultTitle.className = 'result-title defeat';
+
+        const resultMsg = $('result-message');
+        resultMsg.textContent = defeatMessages[Math.floor(Math.random() * defeatMessages.length)];
+
+        showScreen('result-screen');
+    }
+
+    /* ============================================================
+       INITIALIZATION
+       ============================================================ */
+
+    // Create title screen particles
+    function createParticles() {
+        const container = $('particles');
+        for (let i = 0; i < 40; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.animationDuration = (3 + Math.random() * 6) + 's';
+            p.style.animationDelay = Math.random() * 8 + 's';
+            p.style.width = (2 + Math.random() * 4) + 'px';
+            p.style.height = p.style.width;
+            container.appendChild(p);
+        }
+    }
+
+    // Start button
+    $('start-btn').addEventListener('click', () => {
+        audio.init();
+        audio.playSfxSelect();
+        startBattle();
+    });
+
+    // Restart button
+    $('restart-btn').addEventListener('click', () => {
+        audio.init();
+        audio.playSfxSelect();
+        startBattle();
+    });
+
+    // Mute button
+    $('mute-btn').addEventListener('click', () => {
+        audio.init();
+        const muted = audio.toggleMute();
+        $('mute-btn').textContent = muted ? '🔇' : '🔊';
+    });
+
+    // Prevent zoom on double tap
+    document.addEventListener('touchend', e => {
+        const now = Date.now();
+        if (now - (document.lastTouchEnd || 0) < 300) e.preventDefault();
+        document.lastTouchEnd = now;
+    }, { passive: false });
+
+    // Init particles
+    createParticles();
+    </script>
+</body>
+</html>
