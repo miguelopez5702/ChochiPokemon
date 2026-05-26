@@ -1426,7 +1426,7 @@
         const move = CONFIG.PLAYER.moves[idx];
         state.player.pp[idx]--;
         
-        await typeDialogue(`¡CHOCHI usó ${move.name.toUpperCase()}!`);
+        await printMsg(`¡CHOCHI usó ${move.name.toUpperCase()}!`);
         
         // Desplazamiento rápido al golpear
         const pSprite = $('player-sprite');
@@ -1521,7 +1521,7 @@
     async function handleEnemyTurn() {
         const move = CONFIG.ENEMY.moves[Math.floor(Math.random() * CONFIG.ENEMY.moves.length)];
         
-        await typeDialogue(`¡El CONTRATO usó ${move.name.toUpperCase()}!`);
+        await printMsg(`¡El CONTRATO usó ${move.name.toUpperCase()}!`);
         
         const eSprite = $('enemy-sprite');
         const pSprite = $('player-sprite');
