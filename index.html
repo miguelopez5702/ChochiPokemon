@@ -159,8 +159,8 @@
         /* Mini coche decorativo en menú */
         .decor-car {
             z-index: 2;
-            width: 140px;
-            height: 70px;
+            width: 180px;
+            height: 100px;
             animation: idleFloat 3s ease-in-out infinite alternate;
         }
 
@@ -473,9 +473,9 @@
         #bmw-actor {
             position: absolute;
             bottom: 40px;
-            left: -200px;
-            width: 150px;
-            height: 70px;
+            left: -250px;
+            width: 250px;
+            height: 140px;
             z-index: 30;
             pointer-events: none;
             display: none;
@@ -484,6 +484,7 @@
         .bmw-svg {
             width: 100%;
             height: 100%;
+            object-fit: contain;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 10px rgba(0, 243, 255, 0.4));
         }
 
@@ -699,15 +700,7 @@
 
             <!-- Icono BMW dibujado en SVG interactivo en título -->
             <div class="decor-car">
-                <svg viewBox="0 0 100 50" style="width:100%; height:100%;">
-                    <path d="M 5,30 L 10,20 L 35,20 L 45,10 L 75,10 L 85,25 L 95,25 L 95,38 L 5,38 Z" fill="#ffffff" stroke="#1b0f3c" stroke-width="2"/>
-                    <path d="M 47,12 L 73,12 L 81,24 L 47,24 Z" fill="#00f3ff" opacity="0.6" stroke="#1b0f3c" stroke-width="1.5"/>
-                    <circle cx="25" cy="38" r="8" fill="#111" stroke="#ff007f" stroke-width="1.5"/>
-                    <circle cx="75" cy="38" r="8" fill="#111" stroke="#ff007f" stroke-width="1.5"/>
-                    <rect x="90" y="27" width="4" height="4" fill="#ffea00"/>
-                    <rect x="5" y="32" width="2" height="4" fill="#00f3ff"/>
-                    <rect x="7" y="32" width="2" height="4" fill="#ff007f"/>
-                </svg>
+                <img src="carromato.png" alt="Carromato Decorativo" style="width:100%; height:100%; object-fit: contain; filter: drop-shadow(0 0 15px rgba(0, 243, 255, 0.6));">
             </div>
 
             <div class="start-container">
@@ -769,19 +762,7 @@
 
                 <!-- Actor BMW animable para el atropello -->
                 <div id="bmw-actor">
-                    <svg class="bmw-svg" viewBox="0 0 100 50">
-                        <path d="M 5,30 L 10,20 L 35,20 L 45,10 L 75,10 L 85,25 L 95,25 L 95,38 L 5,38 Z" fill="#ffffff" stroke="#000" stroke-width="2"/>
-                        <path d="M 47,12 L 73,12 L 81,24 L 47,24 Z" fill="#00e5ff" opacity="0.6" stroke="#000" stroke-width="1.5"/>
-                        <line x1="60" y1="12" x2="60" y2="24" stroke="#000" stroke-width="1.5"/>
-                        <circle cx="25" cy="38" r="8" fill="#111" stroke="#fff" stroke-width="1.5"/>
-                        <circle cx="25" cy="38" r="4" fill="#888"/>
-                        <circle cx="75" cy="38" r="8" fill="#111" stroke="#fff" stroke-width="1.5"/>
-                        <circle cx="75" cy="38" r="4" fill="#888"/>
-                        <rect x="90" y="27" width="4" height="4" fill="#ffeb3b"/>
-                        <rect x="5" y="32" width="2" height="4" fill="#00d2ff"/>
-                        <rect x="7" y="32" width="2" height="4" fill="#0066ff"/>
-                        <rect x="9" y="32" width="2" height="4" fill="#ff0055"/>
-                    </svg>
+                    <img src="carromato.png" class="bmw-svg" alt="Carromato BMW">
                 </div>
             </div>
 
@@ -1360,7 +1341,7 @@
         return new Promise(resolve => {
             const actor = $('bmw-actor');
             actor.style.display = 'block';
-            actor.style.left = '-180px';
+            actor.style.left = '-250px';
             actor.style.transform = 'scaleX(1) rotate(0deg)';
 
             const arenaWidth = $('battle-arena').clientWidth;
@@ -1368,7 +1349,7 @@
             const arenaRect = $('battle-arena').getBoundingClientRect();
             const targetX = enemyBox.left - arenaRect.left - 50;
 
-            let x = -180;
+            let x = -250;
             let speed = 12;
             let stage = 'driving';
             let rotation = 0;
