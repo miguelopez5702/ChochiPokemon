@@ -957,33 +957,39 @@
             });
         },
 
-        // Generador de música procedimental 8 bits (Chiptune loop)
+        // Generador de música procedimental 8 bits (Estilo Batalla Pokémon Clásica)
         playBgm() {
             this.stopBgm();
             if (this.isMuted) return;
 
             let step = 0;
-            const bass = [55, 55, 65.41, 65.41, 73.42, 73.42, 82.41, 82.41]; // La1, Do2, Re2, Mi2
+            // Línea de bajo frenética (estilo combate, notas alternas)
+            const bass = [
+                98.00, 103.83, 98.00, 103.83, 98.00, 103.83, 98.00, 103.83, // Sol2, Lab2
+                116.54, 123.47, 116.54, 123.47, 116.54, 123.47, 116.54, 123.47  // Sib2, Si2
+            ];
+            
+            // Melodía clásica de combate (aproximación al tema salvaje)
             const melody = [
-                220.00, 0, 261.63, 293.66, 329.63, 0, 293.66, 261.63,
-                220.00, 0, 329.63, 0, 392.00, 329.63, 293.66, 0
+                392.00, 0, 466.16, 0, 523.25, 0, 0, 0,       // Sol4, Sib4, Do5
+                392.00, 0, 466.16, 0, 554.37, 523.25, 0, 0,  // Sol4, Sib4, Reb5, Do5
+                392.00, 0, 466.16, 0, 523.25, 0, 0, 0,       // Sol4, Sib4, Do5
+                587.33, 523.25, 466.16, 392.00, 349.23, 0, 0, 0 // Re5, Do5, Sib4, Sol4, Fa4
             ];
 
-            const stepDuration = 60000 / this.bpm / 2; // Corcheas
+            const stepDuration = 60000 / 160 / 4; // Semicorcheas a 160 BPM (ritmo muy rápido)
 
             this.bgmInterval = setInterval(() => {
                 if (this.isMuted || !this.ctx) return;
                 
-                // Bass note every quarter note (every 2 steps)
-                if (step % 2 === 0) {
-                    const bFreq = bass[Math.floor(step / 2) % bass.length];
-                    this.playOsc('sawtooth', bFreq, stepDuration / 1000 * 0.9, 0.04);
-                }
+                // El bajo suena en cada paso (frenético)
+                const bFreq = bass[Math.floor(step / 2) % bass.length];
+                this.playOsc('sawtooth', bFreq, stepDuration / 1000 * 0.9, 0.05);
 
-                // Lead melody every step
+                // La melodía usa onda cuadrada para sonar como una GameBoy
                 const mFreq = melody[step % melody.length];
-                if (mFreq > 0 && Math.random() > 0.15) {
-                    this.playOsc('triangle', mFreq, stepDuration / 1000 * 0.7, 0.035);
+                if (mFreq > 0) {
+                    this.playOsc('square', mFreq, stepDuration / 1000 * 0.8, 0.04);
                 }
 
                 step++;
